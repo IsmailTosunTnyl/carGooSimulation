@@ -20,5 +20,7 @@ class Driver:
         self.cargo_TorD_Time = cargo_TorD_Time
         self.start_cargo_TorD_Time = 0
         self.end_cargo_TorD_Time = self.start_cargo_TorD_Time + self.cargo_TorD_Time
+        self.cargo_no = 1
+        self.cargo_queue_time=0
 
 
