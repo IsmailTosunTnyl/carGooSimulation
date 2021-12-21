@@ -33,10 +33,14 @@ def get_nearest_charger(chargers):
 drivers = list()
 chargers = list()
 cargos = list()
-# TODO adjustable charger and cargo
-for i in range(4):
+
+print("Check values in 'values.xlsx' before start simulation")
+charger_count = int(input("Enter Charger Count\n"))
+cargo_count = int(input("Enter cargo İO Terminal Count\n"))
+system_end_time = int(input("Enter System End Time (minutes)"))
+for i in range(charger_count):
     chargers.append(Charger((i + 1)))
-for i in range(1):
+for i in range(cargo_count):
     cargos.append(Cargo(i + 1))
 
 arrival_r = random.randint(1, 100)
@@ -52,12 +56,14 @@ drivers[0].end_charging_time = drivers[0].charging_time
 timer = 0
 driver_no = 1
 # Driver random datas
-while timer < 700:
+while True:
     arrival_r = random.randint(1, 100)
     charger_r = random.randint(1, 100)
     cargo_r = random.randint(1, 100)
 
     arrival_timer = random_to_data(arrival_RD, arrival_r)
+    if (timer + arrival_timer) > system_end_time:
+        break
     drivers.append(
         Driver(driver_no, arrival_r, arrival_timer, charger_r,
                random_to_data(charger_RD, charger_r),
@@ -73,7 +79,8 @@ for driver in drivers:
     if driver.arrival_time < chargers[charger].available_time:
         driver.queue_time = chargers[charger].available_time - driver.arrival_time
 
-    charge_end = chargers[charger].available_time + driver.charging_time
+    # charge_end = chargers[charger].available_time + driver.charging_time
+    charge_end = driver.arrival_time + driver.charging_time + driver.queue_time
     charge_start = chargers[charger].available_time
     chargers[charger].available_time = charge_end
     chargers[charger].utilization += driver.charging_time
@@ -88,7 +95,7 @@ for driver in drivers:
     if driver.arrival_time < cargos[cargo].available_time:
         driver.cargo_queue_time = cargos[cargo].available_time - driver.arrival_time
 
-    cargo_end = cargos[cargo].available_time + driver.cargo_TorD_Time
+    cargo_end = driver.arrival_time + driver.cargo_TorD_Time + driver.cargo_queue_time
     cargo_start = cargos[cargo].available_time
     cargos[cargo].available_time = cargo_end
     cargos[cargo].utilization += driver.cargo_TorD_Time
@@ -104,7 +111,8 @@ for driver in drivers:
 
 for i in chargers:
     print("utilization",i.utilization)"""
-#TODO Charger and Cargo Utilization
-drivers = drivers[0:-1]
 
-ExcelIO().export_report(drivers,chargers,cargos)
+
+
+ExcelIO().export_report(drivers, chargers, cargos)
+print("'report.xlsx' created successfully")

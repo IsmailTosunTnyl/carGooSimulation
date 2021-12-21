@@ -41,13 +41,55 @@ class ExcelIO:
 
         return {"Time Between Arrivals": a, "Random-digit": r}
 
-    def export_report(self, drivers, chargers, cargos):
+    def export_report_page2(self, drivers, chargers, cargos):
 
+        charger_util = [0 for _ in chargers]
+        cargo_util = [0 for _ in cargos]
+        total_driver_count = len(drivers)
+        total_charger_waiting_time = 0
+        total_cargo_waiting_time = 0
+        charger_queue_counter = 0
+        cargo_queue_counter = 0
+        for driver in drivers:
+            charger_util[driver.charger_no - 1] += driver.charging_time
+            cargo_util[driver.cargo_no - 1] += driver.cargo_TorD_Time
+            total_charger_waiting_time += driver.queue_time
+            total_cargo_waiting_time += driver.cargo_queue_time
+
+            if driver.queue_time != 0:
+                charger_queue_counter += 1
+            if driver.cargo_queue_time != 0:
+                cargo_queue_counter += 1
+
+        for charger in chargers:
+            charger_util[charger.charger_no - 1] = charger_util[charger.charger_no - 1] / charger.available_time
+        for cargo in cargos:
+            cargo_util[cargo.cargo_no - 1] = cargo_util[cargo.cargo_no - 1] / cargo.available_time
+
+        average_waiting_time_for_charger = total_charger_waiting_time / total_driver_count
+        average_waiting_time_for_cargo = total_cargo_waiting_time / total_driver_count
+        probability_of_waiting_charger = charger_queue_counter / total_driver_count
+        probability_of_waiting_cargo = cargo_queue_counter / total_driver_count
+
+        result = {"Driver Count": [total_driver_count, ],
+                  "Average Waiting Time for Charger": [average_waiting_time_for_charger, ],
+                  "Probability of waiting for Charger": [probability_of_waiting_charger, ],
+                  "Average Waiting Time for Cargo": [average_waiting_time_for_cargo, ],
+                  "Probability of waiting for Cargo": [probability_of_waiting_cargo, ]}
+        for i in chargers:
+            key1 = "Charger " + str(i.charger_no) + " Utilization"
+            result[key1] = [charger_util[i.charger_no - 1], ]
+        for i in cargos:
+            key1 = "Cargo " + str(i.cargo_no) + " Utilization"
+            result[key1] = [cargo_util[i.cargo_no - 1], ]
+        return result
+
+    def export_report(self, drivers, chargers, cargos):
+        result_page2 = self.export_report_page2(drivers, chargers, cargos)
         result = {"Driver No": list(), "Charger No": list(), "Random Digit For Arrival": list(),
-                  "Time Between Arrivals": list(), "Arrival time": list(), }
+                  "Time Between Arrivals": list(), "Arrival time": list(), "Random Digit For Charging Time": list()}
 
         # Creating multi cargo and charger
-        result["Random Digit For Charging Time"] = list()
         for i in chargers:
             key1 = "Charger " + str(i.charger_no) + " Start charging"
             key2 = "Charger " + str(i.charger_no) + "  Charging Time"
@@ -108,8 +150,10 @@ class ExcelIO:
                     result[key2].append(" ")
                     result[key3].append(" ")
         result = pd.DataFrame(result)
+        result_page2 = pd.DataFrame(result_page2)
         writer = pd.ExcelWriter("report.xlsx")
-        result.to_excel(writer, sheet_name="sss")
+        result.to_excel(writer, sheet_name="Data")
+        result_page2.to_excel(writer, sheet_name="Analyze")
         writer.save()
 
 
