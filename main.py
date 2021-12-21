@@ -34,7 +34,7 @@ drivers = list()
 chargers = list()
 cargos = list()
 # TODO adjustable charger and cargo
-for i in range(2):
+for i in range(4):
     chargers.append(Charger((i + 1)))
 for i in range(1):
     cargos.append(Cargo(i + 1))
@@ -97,12 +97,14 @@ for driver in drivers:
     driver.start_cargo_TorD_Time = cargo_start
     driver.cargo_no = cargos[cargo].cargo_no
 
-for i in drivers:
+"""for i in drivers:
     print("d_no", i.driver_no, "ch_no", i.charger_no, "queue", i.queue_time, "a_time", i.arrival_time, "a_bet",
           i.time_between_arrivals, "ch_time", i.charging_time, "enc_ch", i.end_charging_time)
-    """print("d_no", i.driver_no,"cargo_no",i.cargo_no,"cargo taking time",i.cargo_TorD_Time,"start taking",
-          i.start_cargo_TorD_Time,"end",i.end_cargo_TorD_Time,"queue",i.cargo_queue_time,"arrival",i.arrival_time)"""
+    
 
 for i in chargers:
-    print("utilization",i.utilization)
+    print("utilization",i.utilization)"""
+#TODO Charger and Cargo Utilization
+drivers = drivers[0:-1]
 
+ExcelIO().export_report(drivers,chargers,cargos)
