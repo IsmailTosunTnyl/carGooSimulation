@@ -104,14 +104,6 @@ for driver in drivers:
     driver.start_cargo_TorD_Time = cargo_start
     driver.cargo_no = cargos[cargo].cargo_no
 
-"""for i in drivers:
-    print("d_no", i.driver_no, "ch_no", i.charger_no, "queue", i.queue_time, "a_time", i.arrival_time, "a_bet",
-          i.time_between_arrivals, "ch_time", i.charging_time, "enc_ch", i.end_charging_time)
-    
-
-for i in chargers:
-    print("utilization",i.utilization)"""
-
 
 
 ExcelIO().export_report(drivers, chargers, cargos)
